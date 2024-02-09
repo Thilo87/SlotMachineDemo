@@ -39,7 +39,7 @@ class SLOTMACHINEDEMO_API USlotMachine : public UObject
 	/** Shuffles (spins) all elements instantly */
 	void ShuffleElements();
 	
-	TArray< TObjectPtr< USlotMachineLine > > FindWinningLines() const;
+	// TArray< TObjectPtr< USlotMachineLine > > FindWinningLines() const;
 
 public:
 	void Init();
@@ -84,5 +84,5 @@ public:
 	
 	/** Spins the machine. Returns the won lines and the payout. */
 	UFUNCTION( BlueprintCallable )
-	void Spin( TArray< TObjectPtr< USlotMachineLine > >& WonLines, float& Payout );
+	void Spin( TArray< USlotMachineLine* >& WonLines, float& Payout );
 };

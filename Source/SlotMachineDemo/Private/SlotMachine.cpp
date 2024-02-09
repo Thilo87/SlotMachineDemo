@@ -19,10 +19,6 @@ void USlotMachine::ShuffleElements()
 {
 }
 
-TArray<TObjectPtr<USlotMachineLine>> USlotMachine::FindWinningLines() const
-{
-}
-
 void USlotMachine::Init()
 {
 	RefillElements();
@@ -43,7 +39,7 @@ void USlotMachine::SetNumSelectedLines(int NewNumSelectedLines)
 	NumSelectedLines = NewNumSelectedLines;
 }
 
-void USlotMachine::Spin(TArray<TObjectPtr<USlotMachineLine>>& WonLines, float& Payout)
+void USlotMachine::Spin(TArray<USlotMachineLine*>& WonLines, float& Payout)
 {
 	
 }
