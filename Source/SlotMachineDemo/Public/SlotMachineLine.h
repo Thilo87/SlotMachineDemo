@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS( Blueprintable )
 class SLOTMACHINEDEMO_API USlotMachineLine : public UObject
 {
 	GENERATED_BODY()

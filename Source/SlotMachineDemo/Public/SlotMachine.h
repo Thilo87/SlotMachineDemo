@@ -20,7 +20,7 @@ struct FSlotMachineColumn
 /**
  * 
  */
-UCLASS()
+UCLASS( Blueprintable )
 class SLOTMACHINEDEMO_API USlotMachine : public UObject
 {
 	GENERATED_BODY()
