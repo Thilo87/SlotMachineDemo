@@ -42,7 +42,7 @@ class SLOTMACHINEDEMO_API USlotMachine : public UObject
 	/** Shuffles (spins) all elements instantly */
 	void ShuffleElements();
 	
-	// TArray< TObjectPtr< USlotMachineLine > > FindWinningLines() const;
+	//TArray< TObjectPtr< USlotMachineLine > > FindWinningLines() const;
 
 public:
 	void Init();

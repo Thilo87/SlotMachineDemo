@@ -17,6 +17,18 @@ void USlotMachine::RefillElements()
 
 void USlotMachine::ShuffleElements()
 {
+	for ( int i = 0; i < Elements.Num(); ++i )
+	{
+		auto& ColumnElements = Elements[ i ].Elements;
+		
+		// ElementTypes[ NewElementAtZero ] will be the first element in the new column
+		const int NewElementAtZero = FMath::RandRange( 0, ElementTypes.Num() - 1 );
+
+		// refill the turned column
+		ColumnElements.Empty();
+		for ( int j = 0; j < ElementTypes.Num(); ++j )
+			ColumnElements.Add( ElementTypes[ ( j + NewElementAtZero ) % ElementTypes.Num() ] );
+	}
 }
 
 void USlotMachine::Init()
@@ -86,5 +98,5 @@ void USlotMachine::DecreaseBet()
 
 void USlotMachine::Spin(TArray<USlotMachineLine*>& WonLines, float& Payout)
 {
-	
+	ShuffleElements();
 }
