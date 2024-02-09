@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SlotMachine.h"
+#include "SlotMachine/SlotMachine.h"
 #include "SlotMachineElementWidget.h"
 #include "UObject/Object.h"
 #include "Blueprint/UserWidget.h"
