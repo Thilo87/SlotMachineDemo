@@ -31,7 +31,7 @@ void USlotMachine::ShuffleElements()
 	}
 }
 
-void USlotMachine::FindWinningLines( TArray< USlotMachineLine* >& WinningLines, float& Payout ) const
+void USlotMachine::FindWinningLines( TArray< TSubclassOf< USlotMachineLine > >& WinningLines, float& Payout ) const
 {
 	WinningLines.Empty();
 	Payout = 0.f;
@@ -61,12 +61,19 @@ void USlotMachine::FindWinningLines( TArray< USlotMachineLine* >& WinningLines, 
 		}
 
 		// summarize payout
+		bool bHasAnyElementWon = false;
 		for ( const auto NumberOfSameElements: NumberOfSameElementsInLine )
 		{
 			const USlotMachineElement* SlotMachineElementCDO = NumberOfSameElements.Key.GetDefaultObject();
 			if ( const auto FoundPayout = SlotMachineElementCDO->Payout.Find( NumberOfSameElements.Value ) )
+			{
 				Payout += ( *FoundPayout ) * BetSize;
+				bHasAnyElementWon = true;
+			}
 		}
+
+		if ( bHasAnyElementWon )
+			WinningLines.Add( Line );
 	}
 }
 
@@ -135,7 +142,7 @@ void USlotMachine::DecreaseBet()
 	if ( OldBet != BetSize ) OnBetSizeChanged.Broadcast( BetSize );
 }
 
-void USlotMachine::Spin(TArray<USlotMachineLine*>& WonLines, float& Payout)
+void USlotMachine::Spin(TArray<TSubclassOf<USlotMachineLine>>& WonLines, float& Payout)
 {
 	ShuffleElements();
 	FindWinningLines( WonLines, Payout );
