@@ -42,7 +42,7 @@ class SLOTMACHINEDEMO_API USlotMachine : public UObject
 	/** Shuffles (spins) all elements instantly */
 	void ShuffleElements();
 	
-	//TArray< TObjectPtr< USlotMachineLine > > FindWinningLines() const;
+	void FindWinningLines( TArray< USlotMachineLine* >& WinningLines, float& Payout ) const;
 
 public:
 	void Init();
@@ -94,7 +94,7 @@ public:
 
 	/** Get all elements that are visible. The number of visible rows and columns is defined in other UPROPERTIES. */
 	UFUNCTION( BlueprintCallable )
-	TArray< FSlotMachineColumn > GetVisibleElements() const;
+	TArray< FSlotMachineColumn > GetVisibleColumns() const;
 
 	/** Set amount of bet per line. Is multiplied with the payout of an element. */
 	UFUNCTION( BlueprintCallable )

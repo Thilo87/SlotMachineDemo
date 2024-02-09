@@ -31,6 +31,45 @@ void USlotMachine::ShuffleElements()
 	}
 }
 
+void USlotMachine::FindWinningLines( TArray< USlotMachineLine* >& WinningLines, float& Payout ) const
+{
+	WinningLines.Empty();
+	Payout = 0.f;
+	
+	TArray< FSlotMachineColumn > VisibleColumns = GetVisibleColumns();
+	
+	for ( const auto Line: Lines )
+	{
+		// we're saving and incrementing the number of same elements in the line here
+		TMap< TSubclassOf< USlotMachineElement >, int > NumberOfSameElementsInLine;
+
+		const USlotMachineLine* LineCDO = Line.GetDefaultObject();
+		
+		check( LineCDO->RowIndices.Num() == NumVisibleRows );
+		check( VisibleColumns.Num() == NumVisibleRows );
+
+		// calc number of same elements in line
+		for ( int i = 0; i < NumVisibleRows; ++i )
+		{
+			const auto& Element = VisibleColumns[ i ].Elements[ LineCDO->RowIndices[ i ] ];
+			const auto FoundElement = NumberOfSameElementsInLine.Find( Element );
+			
+			if ( !FoundElement )
+				NumberOfSameElementsInLine.Add( Element, 1 );
+			else
+				( *FoundElement )++;
+		}
+
+		// summarize payout
+		for ( const auto NumberOfSameElements: NumberOfSameElementsInLine )
+		{
+			const USlotMachineElement* SlotMachineElementCDO = NumberOfSameElements.Key.GetDefaultObject();
+			if ( const auto FoundPayout = SlotMachineElementCDO->Payout.Find( NumberOfSameElements.Value ) )
+				Payout += ( *FoundPayout ) * BetSize;
+		}
+	}
+}
+
 void USlotMachine::Init()
 {
 	RefillElements();
@@ -41,7 +80,7 @@ float USlotMachine::GetTotalBet() const
 	return BetSize * NumSelectedLines;
 }
 
-TArray<FSlotMachineColumn> USlotMachine::GetVisibleElements() const
+TArray<FSlotMachineColumn> USlotMachine::GetVisibleColumns() const
 {
 	TArray< FSlotMachineColumn > VisibleElements;
 	for ( int j = 0; j < FMath::Min( Elements.Num(), NumColumns ); ++j )
@@ -99,4 +138,5 @@ void USlotMachine::DecreaseBet()
 void USlotMachine::Spin(TArray<USlotMachineLine*>& WonLines, float& Payout)
 {
 	ShuffleElements();
+	FindWinningLines( WonLines, Payout );
 }
