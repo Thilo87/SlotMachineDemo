@@ -7,7 +7,7 @@
 #include "SlotMachineLine.generated.h"
 
 /**
- * 
+ * A line of a slot machine. The row indices are the indices of the rows in the columns. This is where the line goes through.
  */
 UCLASS( Blueprintable )
 class SLOTMACHINEDEMO_API USlotMachineLine : public UObject
