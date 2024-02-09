@@ -8,12 +8,12 @@
 #include "UObject/Object.h"
 #include "SlotMachine.generated.h"
 
-USTRUCT()
+USTRUCT( BlueprintType )
 struct FSlotMachineColumn
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
+	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	TArray< TSubclassOf< USlotMachineElement > > Elements;
 };
 
@@ -24,7 +24,7 @@ UCLASS( Blueprintable )
 class SLOTMACHINEDEMO_API USlotMachine : public UObject
 {
 	GENERATED_BODY()
-
+	
 	/** Columns (and rows) of the slot machine. Access by Elements[ ColumnIndex ].Elements[ RowIndex ]. Does include currently invisible elements.
 	 *	E.g. if possible elements are T, J, Q, K, A and a golden coin, but only 3 visible rows, there would be anyway 6 elements in each column.
 	 */
@@ -52,9 +52,9 @@ public:
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	TArray< TSubclassOf< USlotMachineElement > > ElementTypes;
 
-	/** Number of rows of this slot machine */
+	/** Number of visible rows of this slot machine */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
-	int NumRows = 5;
+	int NumVisibleRows = 3;
 
 	/** Number of columns of this slot machine */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
@@ -73,6 +73,10 @@ public:
 	/** Get the total bet */
 	UFUNCTION( BlueprintPure )
 	float GetTotalBet() const;
+
+	/** Get all elements that are visible. The number of visible rows and columns is defined in other UPROPERTIES. */
+	UFUNCTION( BlueprintCallable )
+	TArray< FSlotMachineColumn > GetVisibleElements() const;
 
 	/** Set amount of bet per line. Is multiplied with the payout of an element. */
 	UFUNCTION( BlueprintCallable )

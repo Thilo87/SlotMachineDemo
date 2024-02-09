@@ -6,7 +6,10 @@
 void USlotMachineWidget::NativeConstruct()
 {
 	if ( SlotMachineType )
+	{
 		SlotMachine = NewObject< USlotMachine >( this, SlotMachineType );
+		SlotMachine->Init();
+	}
 	
 	Super::NativeConstruct();
 }
