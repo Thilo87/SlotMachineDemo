@@ -38,8 +38,10 @@ void USlotMachine::FindWinningLines( TArray< TSubclassOf< USlotMachineLine > >& 
 	
 	TArray< FSlotMachineColumn > VisibleColumns = GetVisibleColumns();
 	
-	for ( const auto Line: Lines )
+	for ( int l = 0; l < NumSelectedLines; ++l )
 	{
+		auto const& Line = Lines[ l ];
+		
 		// we're saving and incrementing the number of same elements in the line here
 		TMap< TSubclassOf< USlotMachineElement >, int > NumberOfSameElementsInLine;
 
