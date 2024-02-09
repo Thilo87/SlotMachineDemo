@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SlotMachine.h"
+#include "SlotMachine/SlotMachine.h"
 
 #include "SlotMachineDemoGameMode.h"
 
