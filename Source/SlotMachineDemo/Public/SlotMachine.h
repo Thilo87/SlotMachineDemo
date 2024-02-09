@@ -17,6 +17,9 @@ struct FSlotMachineColumn
 	TArray< TSubclassOf< USlotMachineElement > > Elements;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FSlotMachineBetSizeChanged, float, NewBetSize );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FSlotMachineNumLinesChanged, int, NewNumLines );
+
 /**
  * 
  */
@@ -44,6 +47,13 @@ class SLOTMACHINEDEMO_API USlotMachine : public UObject
 public:
 	void Init();
 
+	UPROPERTY( BlueprintAssignable )
+	FSlotMachineBetSizeChanged OnBetSizeChanged;
+
+	UPROPERTY( BlueprintAssignable )
+	FSlotMachineNumLinesChanged OnNumSelectedLinesChanged;
+
+
 	/** All lines of this slot machine the player can select */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	TArray< TSubclassOf< USlotMachineLine > > Lines;
@@ -67,8 +77,16 @@ public:
 
 	/** Default amount of bet per line. Is multiplied with the payout of an element. */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
-	float Bet = 10.f;
+	float BetSize = 0.1f;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	float MinBetSize = 0.1f;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	float MaxBetSize = 2.f;
 	
+	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	float BetStepSize = 0.1f;
 
 	/** Get the total bet */
 	UFUNCTION( BlueprintPure )
@@ -85,6 +103,18 @@ public:
 	/** Set number of selected lines */
 	UFUNCTION( BlueprintCallable )
 	void SetNumSelectedLines( int NewNumSelectedLines );
+
+	UFUNCTION( BlueprintCallable )
+	void IncreaseNumSelectedLines();
+	
+	UFUNCTION( BlueprintCallable )
+	void DecreaseNumSelectedLines();
+
+	UFUNCTION( BlueprintCallable )
+	void IncreaseBet();
+	
+	UFUNCTION( BlueprintCallable )
+	void DecreaseBet();
 	
 	/** Spins the machine. Returns the won lines and the payout. */
 	UFUNCTION( BlueprintCallable )

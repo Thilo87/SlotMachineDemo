@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "SlotMachine.h"
+#include "SlotMachineElementWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "UObject/Object.h"
 #include "SlotMachineWidget.generated.h"
@@ -25,6 +26,12 @@ public:
 
 	UFUNCTION( BlueprintPure )
 	const USlotMachine* GetSlotMachine() const { return SlotMachine; }
+
+	UFUNCTION( BlueprintImplementableEvent )
+	void OnBetSizeChanged( float NewBetSize );
+
+	UFUNCTION( BlueprintImplementableEvent )
+	void OnNumSelectedLinesChanged( int NewNumSelectedLines );
 
 	virtual void NativeConstruct() override;
 };

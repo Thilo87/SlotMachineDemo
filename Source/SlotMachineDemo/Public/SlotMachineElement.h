@@ -18,8 +18,4 @@ public:
 	/** Payout for the element if hitting n elements */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	TMap< int, float > Payout;
-	
-	/** Material used for the element */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly )
-	TObjectPtr< UMaterialInterface > Material;
 };

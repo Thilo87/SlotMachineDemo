@@ -10,6 +10,9 @@ void USlotMachineWidget::NativeConstruct()
 		SlotMachine = NewObject< USlotMachine >( this, SlotMachineType );
 		SlotMachine->Init();
 	}
+
+	SlotMachine->OnBetSizeChanged.AddDynamic( this, &USlotMachineWidget::OnBetSizeChanged );
+	SlotMachine->OnNumSelectedLinesChanged.AddDynamic( this, &USlotMachineWidget::OnNumSelectedLinesChanged );
 	
 	Super::NativeConstruct();
 }
