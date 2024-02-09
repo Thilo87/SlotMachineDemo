@@ -107,6 +107,12 @@ public:
 	UFUNCTION( BlueprintCallable )
 	TArray< FSlotMachineColumn > GetVisibleColumns() const;
 
+	UFUNCTION( BlueprintCallable )
+	TArray< FSlotMachineColumn > GetInvisibleColumnsAfterVisiblePart() const;
+
+	UFUNCTION( BlueprintPure )
+	const TArray< FSlotMachineColumn >& GetAllColumns() const { return Elements; }
+
 
 	/*
 	 *

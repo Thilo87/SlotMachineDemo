@@ -104,6 +104,14 @@ TArray<FSlotMachineColumn> USlotMachine::GetVisibleColumns() const
 	return VisibleElements;
 }
 
+TArray<FSlotMachineColumn> USlotMachine::GetInvisibleColumnsAfterVisiblePart() const
+{
+	TArray< FSlotMachineColumn > InvisibleElements;
+	for ( int j = FMath::Min( Elements.Num(), NumColumns ); j < Elements.Num(); ++j )
+		InvisibleElements.Add( Elements[ j ] );
+	return InvisibleElements;
+}
+
 void USlotMachine::SetBet(float NewBet)
 {
 	const float OldBet = BetSize;
