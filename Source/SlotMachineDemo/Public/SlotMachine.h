@@ -152,5 +152,5 @@ public:
 	
 	/** Spins the machine. Returns the won lines and the payout. */
 	UFUNCTION( BlueprintCallable )
-	void Spin( TArray< TSubclassOf< USlotMachineLine > >& WonLines, float& Payout );
+	bool Spin( TArray< TSubclassOf< USlotMachineLine > >& WonLines, float& Payout );
 };

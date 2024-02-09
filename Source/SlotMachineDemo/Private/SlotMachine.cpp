@@ -3,6 +3,8 @@
 
 #include "SlotMachine.h"
 
+#include "SlotMachineDemoGameMode.h"
+
 void USlotMachine::RefillElements()
 {
 	Elements.Empty();
@@ -144,8 +146,14 @@ void USlotMachine::DecreaseBet()
 	if ( OldBet != BetSize ) OnBetSizeChanged.Broadcast( BetSize );
 }
 
-void USlotMachine::Spin(TArray<TSubclassOf<USlotMachineLine>>& WonLines, float& Payout)
+bool USlotMachine::Spin(TArray<TSubclassOf<USlotMachineLine>>& WonLines, float& Payout)
 {
+	if ( const ASlotMachineDemoGameMode* GameMode = Cast< ASlotMachineDemoGameMode >( GetWorld()->GetAuthGameMode() ) )
+		if ( !IsValid( GameMode->GetBank() ) || !GameMode->GetBank()->AddToBalance( GetTotalBet() ) )
+			return false;
+	
 	ShuffleElements();
 	FindWinningLines( WonLines, Payout );
+	
+	return true;
 }
