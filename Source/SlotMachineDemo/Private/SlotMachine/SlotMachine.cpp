@@ -1,5 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
+﻿// Copyright (C) 2024 Thilo Noll. All Rights Reserved.
 
 #include "SlotMachine/SlotMachine.h"
 
@@ -102,14 +101,6 @@ TArray<FSlotMachineColumn> USlotMachine::GetVisibleColumns() const
 		VisibleElements.Add( Column );
 	}
 	return VisibleElements;
-}
-
-TArray<FSlotMachineColumn> USlotMachine::GetInvisibleColumnsAfterVisiblePart() const
-{
-	TArray< FSlotMachineColumn > InvisibleElements;
-	for ( int j = FMath::Min( Elements.Num(), NumColumns ); j < Elements.Num(); ++j )
-		InvisibleElements.Add( Elements[ j ] );
-	return InvisibleElements;
 }
 
 void USlotMachine::SetBet(float NewBet)

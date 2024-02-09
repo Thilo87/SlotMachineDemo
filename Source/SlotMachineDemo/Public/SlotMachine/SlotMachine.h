@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright (C) 2024 Thilo Noll. All Rights Reserved.
 
 #pragma once
 
@@ -106,10 +106,8 @@ public:
 	/** Get all elements that are visible. The number of visible rows and columns is defined in other UPROPERTIES. */
 	UFUNCTION( BlueprintCallable )
 	TArray< FSlotMachineColumn > GetVisibleColumns() const;
-
-	UFUNCTION( BlueprintCallable )
-	TArray< FSlotMachineColumn > GetInvisibleColumnsAfterVisiblePart() const;
-
+	
+	/** Get all columns, including visible and invisible ones */
 	UFUNCTION( BlueprintPure )
 	const TArray< FSlotMachineColumn >& GetAllColumns() const { return Elements; }
 

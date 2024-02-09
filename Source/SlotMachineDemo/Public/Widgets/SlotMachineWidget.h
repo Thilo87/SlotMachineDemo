@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright (C) 2024 Thilo Noll. All Rights Reserved.
 
 #pragma once
 
@@ -39,6 +39,7 @@ public:
 	UFUNCTION( BlueprintImplementableEvent )
 	void OnNumSelectedLinesChanged( int NewNumSelectedLines );
 
+	/** Called when the bank balance has been changed */
 	UFUNCTION( BlueprintImplementableEvent )
 	void OnBankBalanceChanged( float NewBalance );
 };

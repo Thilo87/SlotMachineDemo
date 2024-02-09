@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright (C) 2024 Thilo Noll. All Rights Reserved.
 
 #pragma once
 
@@ -16,15 +16,18 @@ class SLOTMACHINEDEMO_API ASlotMachineDemoGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
+	/** Bank object containing balance */
 	UPROPERTY()
 	TObjectPtr< UBank > Bank;
 
 public:
 	virtual void BeginPlay() override;
-	
+
+	/** The bank type to create */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	TSubclassOf< UBank > BankType;
 
+	/** Gets the currently selected bank */
 	UFUNCTION( BlueprintPure )
 	UBank* GetBank() const { return Bank; }
 };
