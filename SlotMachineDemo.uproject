@@ -1,0 +1,22 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{6B6A85F7-450D-F906-DFD5-B497BD6F83BB}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "SlotMachineDemo",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "ModelingToolsEditorMode",
+			"Enabled": true,
+			"TargetAllowList": [
+				"Editor"
+			]
+		}
+	]
+}
