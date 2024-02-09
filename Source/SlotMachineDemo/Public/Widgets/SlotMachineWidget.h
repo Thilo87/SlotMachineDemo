@@ -38,4 +38,7 @@ public:
 	/** Called when the number of selected lines has been changed */
 	UFUNCTION( BlueprintImplementableEvent )
 	void OnNumSelectedLinesChanged( int NewNumSelectedLines );
+
+	UFUNCTION( BlueprintImplementableEvent )
+	void OnBankBalanceChanged( float NewBalance );
 };

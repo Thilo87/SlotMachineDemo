@@ -148,12 +148,17 @@ void USlotMachine::DecreaseBet()
 
 bool USlotMachine::Spin(TArray<TSubclassOf<USlotMachineLine>>& WonLines, float& Payout)
 {
-	if ( const ASlotMachineDemoGameMode* GameMode = Cast< ASlotMachineDemoGameMode >( GetWorld()->GetAuthGameMode() ) )
-		if ( !IsValid( GameMode->GetBank() ) || !GameMode->GetBank()->AddToBalance( GetTotalBet() ) )
-			return false;
+	const ASlotMachineDemoGameMode* GameMode = Cast< ASlotMachineDemoGameMode >( GetWorld()->GetAuthGameMode() );
+	if ( !GameMode )
+		return false;
+	
+	if ( !IsValid( GameMode->GetBank() ) || !GameMode->GetBank()->AddToBalance( -GetTotalBet() ) )
+		return false;
 	
 	ShuffleElements();
 	FindWinningLines( WonLines, Payout );
+
+	GameMode->GetBank()->AddToBalance( Payout );
 	
 	return true;
 }

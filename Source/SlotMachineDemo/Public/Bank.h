@@ -11,7 +11,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FBankBalanceChanged, float, NewBala
 /**
  * 
  */
-UCLASS()
+UCLASS( Blueprintable )
 class SLOTMACHINEDEMO_API UBank : public UObject
 {
 	GENERATED_BODY()
