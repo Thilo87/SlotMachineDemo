@@ -3,6 +3,7 @@
 #include "SlotMachine/SlotMachine.h"
 
 #include "SlotMachineDemoGameMode.h"
+#include "Algo/RandomShuffle.h"
 
 void USlotMachine::RefillElements()
 {
@@ -20,6 +21,7 @@ void USlotMachine::ShuffleElements()
 {
 	for ( int i = 0; i < Elements.Num(); ++i )
 	{
+		auto ColumnElementsCopy = Elements[ i ].Elements;
 		auto& ColumnElements = Elements[ i ].Elements;
 		
 		// ElementTypes[ NewElementAtZero ] will be the first element in the new column
@@ -28,8 +30,14 @@ void USlotMachine::ShuffleElements()
 		// refill the turned column
 		ColumnElements.Empty();
 		for ( int j = 0; j < ElementTypes.Num(); ++j )
-			ColumnElements.Add( ElementTypes[ ( j + NewElementAtZero ) % ElementTypes.Num() ] );
+			ColumnElements.Add( ColumnElementsCopy[ ( j + NewElementAtZero ) % ElementTypes.Num() ] );
 	}
+}
+
+void USlotMachine::RandomizeColumnsOrder()
+{
+	for ( int i = 0; i < Elements.Num(); ++i )
+		Algo::RandomShuffle( Elements[ i ].Elements );
 }
 
 void USlotMachine::FindWinningLines( TArray< TSubclassOf< USlotMachineLine > >& WinningLines, float& Payout ) const
@@ -83,6 +91,7 @@ void USlotMachine::FindWinningLines( TArray< TSubclassOf< USlotMachineLine > >& 
 void USlotMachine::Init()
 {
 	RefillElements();
+	RandomizeColumnsOrder();
 }
 
 float USlotMachine::GetTotalBet() const

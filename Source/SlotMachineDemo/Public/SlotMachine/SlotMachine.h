@@ -46,6 +46,9 @@ class SLOTMACHINEDEMO_API USlotMachine : public UObject
 	/** Shuffles (spins) all elements instantly */
 	void ShuffleElements();
 
+	/** Randomize the order of the elements in the columns. Does not spin the column. */
+	void RandomizeColumnsOrder();
+
 	/** Finds the winning lines of the current element constellation and the payout */
 	void FindWinningLines( TArray< TSubclassOf< USlotMachineLine > >& WinningLines, float& Payout ) const;
 
@@ -66,7 +69,7 @@ public:
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	TArray< TSubclassOf< USlotMachineLine > > Lines;
 
-	/** All elements in the defined order in a column */
+	/** All possible elements in a column */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	TArray< TSubclassOf< USlotMachineElement > > ElementTypes;
 
