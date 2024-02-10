@@ -10,7 +10,7 @@
 /**
  * Graphical representation of a slot machine element
  */
-UCLASS()
+UCLASS( Category = "Slot Machine Element Widget" )
 class SLOTMACHINEDEMO_API USlotMachineElementWidget : public UUserWidget
 {
 	GENERATED_BODY()

@@ -12,25 +12,28 @@
 /*
  * Results for a specific line
  */
-USTRUCT( BlueprintType )
+USTRUCT( BlueprintType, Category = "Slot Machine Result" )
 struct FSlotMachineLineResult
 {
 	GENERATED_BODY()
 
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly )
+	/** Line type this result belongs to */
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Slot Machine Result" )
 	TSubclassOf< USlotMachineLine > LineType;
 
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly )
+	/** If an element type has won with this line */
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Slot Machine Result" )
 	bool bHasWon = false;
 
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly )
+	/** Overall payout for this line - with all element types */
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Slot Machine Result" )
 	float OverallPayout = 0.f;
 };
 
 /**
  * Class representing a result of a slot machine spin. Contains all information necessary for statistics etc. TODO: include slot machine properties
  */
-UCLASS( BlueprintType )
+UCLASS( BlueprintType, Category = "Slot Machine Result" )
 class SLOTMACHINEDEMO_API USlotMachineResult : public UObject
 {
 	GENERATED_BODY()
@@ -68,14 +71,14 @@ public:
 	void Init( USlotMachine* UsedSlotMachine );
 
 	/** Gets all won lines */
-	UFUNCTION( BlueprintPure )
+	UFUNCTION( BlueprintPure, Category = "Slot Machine Result|Results" )
 	TArray< TSubclassOf< USlotMachineLine > > GetWonLines() const;
 
 	/** Returns if the element with the specified indices is in a winning line */
-	UFUNCTION( BlueprintCallable )
+	UFUNCTION( BlueprintCallable, Category = "Slot Machine Result|Results" )
 	bool IsElementWinning( int ElementColumnIndex, int ElementRowIndex ) const;
 
 	/** Gets the overall payout of the result */
-	UFUNCTION( BlueprintPure )
+	UFUNCTION( BlueprintPure, Category = "Slot Machine Result|Results" )
 	float GetPayout() const { return Payout; }
 };

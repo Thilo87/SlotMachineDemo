@@ -9,13 +9,13 @@
 /**
  * A line of a slot machine. The row indices are the indices of the rows in the columns. This is where the line goes through.
  */
-UCLASS( Blueprintable )
+UCLASS( Blueprintable, Category = "Slot Machine Line" )
 class SLOTMACHINEDEMO_API USlotMachineLine : public UObject
 {
 	GENERATED_BODY()
 
 public:
 	/** Row indices of the line */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Slot Machine Line|Properties" )
 	TArray< int > RowIndices;
 };

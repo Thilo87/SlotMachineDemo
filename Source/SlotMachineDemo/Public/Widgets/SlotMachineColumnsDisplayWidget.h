@@ -12,17 +12,17 @@
 /**
  * A widget for displaying multiple columns of a slot machine
  */
-UCLASS()
+UCLASS( Category = "Slot Machine Column Display Widget" )
 class SLOTMACHINEDEMO_API USlotMachineColumnsDisplayWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
 public:
 	/** Type of the slot machine */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Slot Machine Column Display Widget|Properties" )
 	TSubclassOf< USlotMachine > SlotMachineType;
 
 	/** Type of the used graphical representation of a slot machine column */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Slot Machine Column Display Widget|Properties" )
 	TSubclassOf< USlotMachineColumnWidget > SlotMachineColumnWidgetType;
 };

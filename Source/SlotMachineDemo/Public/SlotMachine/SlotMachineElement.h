@@ -9,13 +9,13 @@
 /**
  * Element in a slot machine. It's one of the symbols that when you hit a few of them with a line, you get a payout.
  */
-UCLASS( Blueprintable )
+UCLASS( Blueprintable, Category = "Slot Machine Element" )
 class SLOTMACHINEDEMO_API USlotMachineElement : public UObject
 {
 	GENERATED_BODY()
 
 public:
 	/** Payout for the element if hitting n elements with a line */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Slot Machine Element|Properties" )
 	TMap< int, float > Payout;
 };

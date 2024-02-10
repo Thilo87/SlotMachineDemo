@@ -9,7 +9,7 @@
 #include "SlotMachineDemoGameMode.generated.h"
 
 /**
- * 
+ * Game mode of the slot machine demo
  */
 UCLASS()
 class SLOTMACHINEDEMO_API ASlotMachineDemoGameMode : public AGameMode
@@ -24,10 +24,10 @@ public:
 	virtual void BeginPlay() override;
 
 	/** The bank type to create */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Bank" )
 	TSubclassOf< UBank > BankType;
 
 	/** Gets the currently selected bank */
-	UFUNCTION( BlueprintPure )
+	UFUNCTION( BlueprintPure, Category = "Bank" )
 	UBank* GetBank() const { return Bank; }
 };
