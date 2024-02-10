@@ -9,18 +9,9 @@
 #include "UObject/Object.h"
 #include "SlotMachineResult.generated.h"
 
-USTRUCT( BlueprintType )
-struct FSlotMachineElementResult
-{
-	GENERATED_BODY()
-
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly )
-	TSubclassOf< USlotMachineElement > ElementType;
-
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly )
-	TArray< TSubclassOf< USlotMachineLine > > Lines;
-};
-
+/*
+ * Results for a specific line
+ */
 USTRUCT( BlueprintType )
 struct FSlotMachineLineResult
 {
@@ -36,17 +27,8 @@ struct FSlotMachineLineResult
 	float OverallPayout = 0.f;
 };
 
-USTRUCT( BlueprintType )
-struct FSlotMachineColumnResult
-{
-	GENERATED_BODY()
-
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly )
-	TArray< FSlotMachineElementResult > Elements;
-};
-
 /**
- * 
+ * Class representing a result of a slot machine spin. Contains all information necessary for statistics etc. TODO: include slot machine properties
  */
 UCLASS( BlueprintType )
 class SLOTMACHINEDEMO_API USlotMachineResult : public UObject
