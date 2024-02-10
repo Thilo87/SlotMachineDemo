@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "SlotMachineElement.h"
 #include "SlotMachineLine.h"
+#include "SlotMachineResult.h"
 #include "UObject/Object.h"
 #include "SlotMachine.generated.h"
 
@@ -41,7 +42,7 @@ class SLOTMACHINEDEMO_API USlotMachine : public UObject
 	void RefillElements();
 
 	/** Get element at the specified row and column */
-	TSubclassOf< USlotMachineElement > GetElement( int RowIndex, int ColumnIndex ) const { return Elements[ RowIndex ].Elements[ ColumnIndex ]; }
+	TSubclassOf< USlotMachineElement > GetElementType( int ColumnIndex, int RowIndex ) const { return Elements[ ColumnIndex ].Elements[ RowIndex ]; }
 	
 	/** Shuffles (spins) all elements instantly */
 	void ShuffleElements();
@@ -50,7 +51,11 @@ class SLOTMACHINEDEMO_API USlotMachine : public UObject
 	void RandomizeColumnsOrder();
 
 	/** Finds the winning lines of the current element constellation and the payout */
-	void FindWinningLines( TArray< TSubclassOf< USlotMachineLine > >& WinningLines, float& Payout ) const;
+	void FindWinningLines( USlotMachineResult*& Result ) const;
+
+	bool IsElementInLine( int ElementColumnIndex, int ElementRowIndex, const TSubclassOf< USlotMachineLine >& Line ) const;
+	void FindLinesContainingElement( int ElementColumnIndex, int ElementRowIndex, TArray< TSubclassOf< USlotMachineLine > >& LinesContainingElement ) const;
+	int FindNumberOfElementTypeInLine( const TSubclassOf< USlotMachineElement >& ElementType, const TSubclassOf< USlotMachineLine >& Line ) const;
 
 public:
 	void Init();
@@ -159,9 +164,12 @@ public:
 	
 	/** Spins the machine. Returns the won lines and the payout. */
 	UFUNCTION( BlueprintCallable )
-	bool Spin( TArray< TSubclassOf< USlotMachineLine > >& WonLines, float& Payout, bool bIsFreeSpin = false );
+	bool Spin( USlotMachineResult*& Result, bool bIsFreeSpin = false );
 
 	/** Spins the machine NumRounds times with randomly selected lines and calculates an overall EV */
 	UFUNCTION( BlueprintCallable )
 	void CalculateExpectedValue( int NumRounds, float& ExpectedValue );
+
+	UFUNCTION( BlueprintCallable )
+	bool IsWinningElement( int ColumnIndex, int RowIndex ) const;
 };

@@ -40,52 +40,91 @@ void USlotMachine::RandomizeColumnsOrder()
 		Algo::RandomShuffle( Elements[ i ].Elements );
 }
 
-void USlotMachine::FindWinningLines( TArray< TSubclassOf< USlotMachineLine > >& WinningLines, float& Payout ) const
+void USlotMachine::FindWinningLines( USlotMachineResult*& Result ) const
 {
-	WinningLines.Empty();
-	Payout = 0.f;
-	
 	TArray< FSlotMachineColumn > VisibleColumns = GetVisibleColumns();
+
+	Result->Elements.Empty();
+	for ( auto const& VisibleColumn: VisibleColumns )
+	{
+		FSlotMachineColumnResult ColumnResult;
+		for ( auto const& VisibleElement: VisibleColumn.Elements )
+		{
+			FSlotMachineElementResult ElementResult;
+			ElementResult.ElementType = VisibleElement;
+			
+			ColumnResult.Elements.Add( ElementResult );
+		}
+		
+		Result->Elements.Add( ColumnResult );
+	}
+	
+	for ( int j = 0; j < VisibleColumns.Num(); ++j )
+		for ( int i = 0; i < VisibleColumns[ j ].Elements.Num(); ++i )
+			FindLinesContainingElement( j, i, Result->Elements[ j ].Elements[ i ].Lines );
 	
 	for ( int l = 0; l < NumSelectedLines; ++l )
 	{
 		auto const& Line = Lines[ l ];
+
+		FSlotMachineLineResult LineResult;
+		LineResult.LineType = Line;
 		
-		// we're saving and incrementing the number of same elements in the line here
-		TMap< TSubclassOf< USlotMachineElement >, int > NumberOfSameElementsInLine;
-
-		const USlotMachineLine* LineCDO = Line.GetDefaultObject();
-		
-		check( LineCDO->RowIndices.Num() == NumVisibleRows );
-		check( VisibleColumns.Num() == NumVisibleRows );
-
-		// calc number of same elements in line
-		for ( int i = 0; i < NumVisibleRows; ++i )
+		for ( auto const& ElementType: ElementTypes )
 		{
-			const auto& Element = VisibleColumns[ i ].Elements[ LineCDO->RowIndices[ i ] ];
-			const auto FoundElement = NumberOfSameElementsInLine.Find( Element );
-			
-			if ( !FoundElement )
-				NumberOfSameElementsInLine.Add( Element, 1 );
-			else
-				( *FoundElement )++;
-		}
+			const int NumberOfElementTypeInLine = FindNumberOfElementTypeInLine( ElementType, Line );
 
-		// summarize payout
-		bool bHasAnyElementWon = false;
-		for ( const auto NumberOfSameElements: NumberOfSameElementsInLine )
-		{
-			const USlotMachineElement* SlotMachineElementCDO = NumberOfSameElements.Key.GetDefaultObject();
-			if ( const auto FoundPayout = SlotMachineElementCDO->Payout.Find( NumberOfSameElements.Value ) )
+			const USlotMachineElement* SlotMachineElementCDO = ElementType.GetDefaultObject();
+			if ( const auto FoundPayout = SlotMachineElementCDO->Payout.Find( NumberOfElementTypeInLine ) )
 			{
-				Payout += ( *FoundPayout ) * BetSize;
-				bHasAnyElementWon = true;
+				LineResult.OverallPayout += (*FoundPayout) * NumberOfElementTypeInLine * BetSize;
+				Result->Payout += LineResult.OverallPayout;
+
+				LineResult.bHasWon = true;
 			}
 		}
 
-		if ( bHasAnyElementWon )
-			WinningLines.Add( Line );
+		Result->LineResults.Add( LineResult );
 	}
+}
+
+bool USlotMachine::IsElementInLine(int ElementColumnIndex, int ElementRowIndex, const TSubclassOf<USlotMachineLine>& Line) const
+{
+	const USlotMachineLine* LineCDO = Line.GetDefaultObject();
+			
+	if ( LineCDO->RowIndices[ ElementColumnIndex ] == ElementRowIndex )
+		return true;
+
+	return false;
+}
+
+void USlotMachine::FindLinesContainingElement(int ElementColumnIndex, int ElementRowIndex,
+	TArray<TSubclassOf<USlotMachineLine>>& LinesContainingElement) const
+{
+	LinesContainingElement.Empty();
+	
+	for ( int l = 0; l < NumSelectedLines; ++l )
+	{
+		auto const& Line = Lines[ l ];
+	
+		if ( IsElementInLine( ElementColumnIndex, ElementRowIndex, Line ) )
+			LinesContainingElement.Add( Line );
+	}
+}
+
+int USlotMachine::FindNumberOfElementTypeInLine(const TSubclassOf<USlotMachineElement>& ElementType,
+	const TSubclassOf<USlotMachineLine>& Line) const
+{
+	// TODO: optimize?
+	TArray< FSlotMachineColumn > VisibleColumns = GetVisibleColumns();
+	const USlotMachineLine* LineCDO = Line.GetDefaultObject();
+
+	int NumElements = 0;
+	for ( int i = 0; i < NumColumns; ++i )
+		if ( VisibleColumns[ i ].Elements[ LineCDO->RowIndices[ i ] ] == ElementType )
+			++NumElements;
+
+	return NumElements;
 }
 
 void USlotMachine::Init()
@@ -154,7 +193,7 @@ void USlotMachine::DecreaseBet(bool bTriggerEvents)
 	if ( bTriggerEvents && OldBet != BetSize ) OnBetSizeChanged.Broadcast( BetSize );
 }
 
-bool USlotMachine::Spin(TArray<TSubclassOf<USlotMachineLine>>& WonLines, float& Payout, bool bIsFreeSpin)
+bool USlotMachine::Spin(USlotMachineResult*& Result, bool bIsFreeSpin)
 {
 	const ASlotMachineDemoGameMode* GameMode = Cast< ASlotMachineDemoGameMode >( GetWorld()->GetAuthGameMode() );
 	if ( !GameMode )
@@ -164,10 +203,12 @@ bool USlotMachine::Spin(TArray<TSubclassOf<USlotMachineLine>>& WonLines, float& 
 		return false;
 	
 	ShuffleElements();
-	FindWinningLines( WonLines, Payout );
+
+	Result = NewObject< USlotMachineResult >();
+	FindWinningLines( Result );
 
 	if ( !bIsFreeSpin )
-		GameMode->GetBank()->AddToBalance( Payout );
+		GameMode->GetBank()->AddToBalance( Result->Payout );
 	
 	return true;
 }
@@ -193,10 +234,11 @@ void USlotMachine::CalculateExpectedValue(int NumRounds, float& ExpectedValue)
 
 		// simulate a spin
 		TArray< TSubclassOf< USlotMachineLine > > WonLines;
-		float Payout = 0.f;
+
+		USlotMachineResult* Result;
+		Spin( Result, true );
 		
-		Spin( WonLines, Payout, true );
-		OverallPayout += Payout;
+		OverallPayout += Result->Payout;
 		OverallInvestments += GetTotalBet();
 	}
 	
@@ -205,4 +247,26 @@ void USlotMachine::CalculateExpectedValue(int NumRounds, float& ExpectedValue)
 	SetBet( OldBetSize, false );
 	
 	ExpectedValue = OverallPayout / OverallInvestments;
+}
+
+bool USlotMachine::IsWinningElement(int ColumnIndex, int RowIndex) const
+{
+	auto const& ElementType = GetElementType( ColumnIndex, RowIndex );
+
+	// first find all the lines that contain the element
+	TArray< TSubclassOf< USlotMachineLine > > LinesContainingElement;
+	FindLinesContainingElement( ColumnIndex, RowIndex, LinesContainingElement );
+
+	// go through all lines containing the element
+	for ( auto const& LineType: LinesContainingElement )
+	{
+		// find the number of same elements in the line
+		const int NumberOfElementTypeInLine = FindNumberOfElementTypeInLine( ElementType, LineType );
+
+		// find the payout for the number of elements - if there is one, it's winning
+		if ( ElementType.GetDefaultObject()->Payout.Find( NumberOfElementTypeInLine ) )
+			return true;
+	}
+
+	return false;
 }
