@@ -52,19 +52,6 @@ float USlotMachine::GetTotalBet() const
 	return BetSize * NumSelectedLines;
 }
 
-TArray<FSlotMachineColumn> USlotMachine::GetVisibleColumns() const
-{
-	TArray< FSlotMachineColumn > VisibleElements;
-	for ( int j = 0; j < FMath::Min( Elements.Num(), NumColumns ); ++j )
-	{
-		FSlotMachineColumn Column;
-		for ( int i = 0; i < FMath::Min( Elements[ j ].Elements.Num(), NumVisibleRows ); ++i )
-			Column.Elements.Add( Elements[ j ].Elements[ i ] );
-		VisibleElements.Add( Column );
-	}
-	return VisibleElements;
-}
-
 void USlotMachine::SetBet(float NewBet, bool bTriggerEvents)
 {
 	const float OldBet = BetSize;
@@ -115,13 +102,15 @@ bool USlotMachine::Spin(USlotMachineResult*& Result, bool bIsFreeSpin, bool bCan
 	
 	if ( !IsValid( GameMode->GetBank() ) )
 		return false;
-		
+	
 	if ( !bIsFreeSpin )
 		if ( !GameMode->GetBank()->AddToBalance( -GetTotalBet() ) )
 			return false;
-	
+
+	// this actually spins the columns
 	ShuffleElements();
 
+	// create result. All calculations are made in there.
 	Result = NewObject< USlotMachineResult >();
 	Result->Init( this );
 	
@@ -149,10 +138,8 @@ void USlotMachine::CalculateExpectedValue(int NumRounds, float& ExpectedValue)
 			IncreaseBet( false );
 		else
 			DecreaseBet( false );
-
+		
 		// simulate a spin
-		TArray< TSubclassOf< USlotMachineLine > > WonLines;
-
 		USlotMachineResult* Result;
 		Spin( Result, true, false );
 		

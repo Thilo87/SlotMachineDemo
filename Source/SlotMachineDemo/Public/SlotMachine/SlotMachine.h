@@ -99,11 +99,6 @@ public:
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Slot Machine|Properties|Bets" )
 	float BetStepSize = 0.1f;
 
-
-
-	/** Get all elements that are visible. The number of visible rows and columns is defined in other UPROPERTIES. */
-	UFUNCTION( BlueprintCallable, Category = "Slot Machine|Elements" )
-	TArray< FSlotMachineColumn > GetVisibleColumns() const;
 	
 	/** Get all columns, including visible and invisible ones */
 	UFUNCTION( BlueprintPure, Category = "Slot Machine|Elements" )
