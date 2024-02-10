@@ -120,15 +120,15 @@ public:
 
 	/** Set number of selected lines */
 	UFUNCTION( BlueprintCallable )
-	void SetNumSelectedLines( int NewNumSelectedLines );
+	void SetNumSelectedLines( int NewNumSelectedLines, bool bTriggerEvents = true );
 
 	/** Increases the number of lines */
 	UFUNCTION( BlueprintCallable )
-	void IncreaseNumSelectedLines();
+	void IncreaseNumSelectedLines( bool bTriggerEvents = true );
 
 	/** Decreases the number of lines */
 	UFUNCTION( BlueprintCallable )
-	void DecreaseNumSelectedLines();
+	void DecreaseNumSelectedLines( bool bTriggerEvents = true );
 
 
 	/*
@@ -139,15 +139,15 @@ public:
 	
 	/** Set amount of bet per line. Is multiplied with the payout of an element. */
 	UFUNCTION( BlueprintCallable )
-	void SetBet( float NewBet );
+	void SetBet( float NewBet, bool bTriggerEvents = true  );
 	
 	/** Increases the bet by the bet step size up to the max bet */
 	UFUNCTION( BlueprintCallable )
-	void IncreaseBet();
+	void IncreaseBet( bool bTriggerEvents = true );
 
 	/** Decreases the bet by the bet step size up to the min bet */
 	UFUNCTION( BlueprintCallable )
-	void DecreaseBet();
+	void DecreaseBet( bool bTriggerEvents = true );
 
 	/** Get the total bet */
 	UFUNCTION( BlueprintPure )
@@ -156,5 +156,9 @@ public:
 	
 	/** Spins the machine. Returns the won lines and the payout. */
 	UFUNCTION( BlueprintCallable )
-	bool Spin( TArray< TSubclassOf< USlotMachineLine > >& WonLines, float& Payout );
+	bool Spin( TArray< TSubclassOf< USlotMachineLine > >& WonLines, float& Payout, bool bIsFreeSpin = false );
+
+	/** Spins the machine NumRounds times with randomly selected lines and calculates an overall EV */
+	UFUNCTION( BlueprintCallable )
+	void CalculateExpectedValue( int NumRounds, float& ExpectedValue );
 };

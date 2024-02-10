@@ -103,61 +103,97 @@ TArray<FSlotMachineColumn> USlotMachine::GetVisibleColumns() const
 	return VisibleElements;
 }
 
-void USlotMachine::SetBet(float NewBet)
+void USlotMachine::SetBet(float NewBet, bool bTriggerEvents)
 {
 	const float OldBet = BetSize;
 	BetSize = NewBet;
-	if ( OldBet != BetSize ) OnBetSizeChanged.Broadcast( NewBet );
+	if ( bTriggerEvents && OldBet != BetSize ) OnBetSizeChanged.Broadcast( NewBet );
 }
 
-void USlotMachine::SetNumSelectedLines(int NewNumSelectedLines)
+void USlotMachine::SetNumSelectedLines(int NewNumSelectedLines, bool bTriggerEvents)
 {
 	const int OldNumSelectedLines = NumSelectedLines;
 	NumSelectedLines = NewNumSelectedLines;
-	if ( OldNumSelectedLines != NumSelectedLines ) OnNumSelectedLinesChanged.Broadcast( NewNumSelectedLines );
+	if ( bTriggerEvents && OldNumSelectedLines != NumSelectedLines ) OnNumSelectedLinesChanged.Broadcast( NewNumSelectedLines );
 }
 
-void USlotMachine::IncreaseNumSelectedLines()
+void USlotMachine::IncreaseNumSelectedLines(bool bTriggerEvents)
 {
 	const int OldNumSelectedLines = NumSelectedLines;
 	NumSelectedLines = FMath::Min( NumSelectedLines + 1, Lines.Num() );
-	if ( OldNumSelectedLines != NumSelectedLines ) OnNumSelectedLinesChanged.Broadcast( NumSelectedLines );
+	if ( bTriggerEvents && OldNumSelectedLines != NumSelectedLines ) OnNumSelectedLinesChanged.Broadcast( NumSelectedLines );
 }
 
-void USlotMachine::DecreaseNumSelectedLines()
+void USlotMachine::DecreaseNumSelectedLines(bool bTriggerEvents)
 {
 	const int OldNumSelectedLines = NumSelectedLines;
 	NumSelectedLines = FMath::Max( NumSelectedLines - 1, 1 );
-	if ( OldNumSelectedLines != NumSelectedLines ) OnNumSelectedLinesChanged.Broadcast( NumSelectedLines );
+	if ( bTriggerEvents && OldNumSelectedLines != NumSelectedLines ) OnNumSelectedLinesChanged.Broadcast( NumSelectedLines );
 }
 
-void USlotMachine::IncreaseBet()
+void USlotMachine::IncreaseBet(bool bTriggerEvents)
 {
 	const float OldBet = BetSize;
 	BetSize = FMath::Min( BetSize + BetStepSize, MaxBetSize );
-	if ( OldBet != BetSize ) OnBetSizeChanged.Broadcast( BetSize );
+	if ( bTriggerEvents && OldBet != BetSize ) OnBetSizeChanged.Broadcast( BetSize );
 }
 
-void USlotMachine::DecreaseBet()
+void USlotMachine::DecreaseBet(bool bTriggerEvents)
 {
 	const float OldBet = BetSize;
 	BetSize = FMath::Max( BetSize - BetStepSize, MinBetSize );
-	if ( OldBet != BetSize ) OnBetSizeChanged.Broadcast( BetSize );
+	if ( bTriggerEvents && OldBet != BetSize ) OnBetSizeChanged.Broadcast( BetSize );
 }
 
-bool USlotMachine::Spin(TArray<TSubclassOf<USlotMachineLine>>& WonLines, float& Payout)
+bool USlotMachine::Spin(TArray<TSubclassOf<USlotMachineLine>>& WonLines, float& Payout, bool bIsFreeSpin)
 {
 	const ASlotMachineDemoGameMode* GameMode = Cast< ASlotMachineDemoGameMode >( GetWorld()->GetAuthGameMode() );
 	if ( !GameMode )
 		return false;
 	
-	if ( !IsValid( GameMode->GetBank() ) || !GameMode->GetBank()->AddToBalance( -GetTotalBet() ) )
+	if ( !bIsFreeSpin && ( !IsValid( GameMode->GetBank() ) || !GameMode->GetBank()->AddToBalance( -GetTotalBet() ) ) )
 		return false;
 	
 	ShuffleElements();
 	FindWinningLines( WonLines, Payout );
 
-	GameMode->GetBank()->AddToBalance( Payout );
+	if ( !bIsFreeSpin )
+		GameMode->GetBank()->AddToBalance( Payout );
 	
 	return true;
+}
+
+void USlotMachine::CalculateExpectedValue(int NumRounds, float& ExpectedValue)
+{
+	const int OldNumSelectedLines = NumSelectedLines;
+	const float OldBetSize = BetSize;
+	
+	float OverallPayout = 0.f;
+	float OverallInvestments = 0.f;
+	for ( int i = 0; i < NumRounds; ++i )
+	{
+		// select a random number of lines
+		const int RandomNumSelectedLines = FMath::RandRange( 1, Lines.Num() );
+		SetNumSelectedLines( RandomNumSelectedLines, false );
+
+		// increase or decrease bet size
+		if ( static_cast< bool >( FMath::RandRange( 0, 1 ) ) )
+			IncreaseBet( false );
+		else
+			DecreaseBet( false );
+
+		// simulate a spin
+		TArray< TSubclassOf< USlotMachineLine > > WonLines;
+		float Payout = 0.f;
+		
+		Spin( WonLines, Payout, true );
+		OverallPayout += Payout;
+		OverallInvestments += GetTotalBet();
+	}
+	
+	// reset number of selected lines and bet size
+	SetNumSelectedLines( OldNumSelectedLines, false );
+	SetBet( OldBetSize, false );
+	
+	ExpectedValue = OverallPayout / OverallInvestments;
 }
